@@ -1,0 +1,12 @@
+---
+applications:
+- name: SuperRocket.ConsoleCore
+  instances: 1
+  health-check-type: none
+  stack: windows
+  buildpacks:
+  - binary_buildpack
+  no-route: true
+  command: SuperRocket.ConsoleCore.exe
+  
+      

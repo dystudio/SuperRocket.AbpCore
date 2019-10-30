@@ -1,0 +1,11 @@
+---
+applications:
+- name: SuperRocket.AspNetCore
+  memory: 2048M
+  disk_quota: 2048M
+  stack: windows
+  buildpacks:
+   - binary_buildpack
+  command: .\SuperRocket.AspNetCore
+  env:
+    ASPNETCORE_ENVIRONMENT: Development

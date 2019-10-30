@@ -1,0 +1,13 @@
+---
+applications:
+- name: rabbitmq-connector
+  memory: 2048M
+  disk_quota: 2048M
+  stack: windows
+  buildpacks:
+   - hwc_buildpack
+  command: .\RabbitMQ
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+  services:
+    - SuperRocketRabbitMQ 
