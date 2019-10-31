@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SuperRocket.Message;
+using Microsoft.Extensions.Configuration;
 
 namespace RabbitMQ
 {
@@ -19,11 +20,28 @@ namespace RabbitMQ
         private IModel _channel;
         private IConnection _connection;
         private ConnectionFactory _rabbitConnection;
+        private IHostingEnvironment _env;
+        public IConfiguration Configuration { get; set; }
 
-        public ExcelFileMessageService(ILoggerFactory loggerFactory, [FromServices] ConnectionFactory rabbitConnection)
+        public ExcelFileMessageService(ILoggerFactory loggerFactory, 
+            [FromServices] ConnectionFactory rabbitConnection,
+            IConfiguration configuration,
+            IHostingEnvironment env)
         {
+            Configuration = configuration;
             this._logger = loggerFactory.CreateLogger<ExcelFileMessageService>();
-            this._rabbitConnection = rabbitConnection;
+            _env = env;
+            if (_env.IsDevelopment())
+            {
+                var hostName = Configuration["RabbitMQ:HostName"].ToString();
+                var userName = Configuration["RabbitMQ:UserName"].ToString();
+                var password = Configuration["RabbitMQ:Password"].ToString();
+                _rabbitConnection = new ConnectionFactory { HostName = hostName, UserName = userName, Password = password };
+            }
+            else
+            {
+                _rabbitConnection = rabbitConnection;
+            }
             InitRabbitMQ();
         }
 

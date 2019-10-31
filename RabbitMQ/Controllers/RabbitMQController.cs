@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using System;
 using SuperRocket.Message;
 using Newtonsoft.Json;
-
+using Microsoft.Extensions.Configuration;
 
 namespace RabbitMQ.Controllers
 {
@@ -15,11 +15,24 @@ namespace RabbitMQ.Controllers
     {
         ConnectionFactory _rabbitConnection;
         IHostingEnvironment _env;
+        public IConfiguration Configuration { get; set; }
 
-        public RabbitMQController([FromServices] ConnectionFactory rabbitConnection, IHostingEnvironment env)
+        public RabbitMQController([FromServices] ConnectionFactory rabbitConnection, IHostingEnvironment env, IConfiguration configuration)
         {
-            _rabbitConnection = rabbitConnection;
             _env = env;
+            Configuration = configuration;
+            if (_env.IsDevelopment())
+            {
+                var hostName = Configuration["RabbitMQ:HostName"].ToString();
+                var userName = Configuration["RabbitMQ:UserName"].ToString();
+                var password = Configuration["RabbitMQ:Password"].ToString();
+                _rabbitConnection = new ConnectionFactory { HostName = hostName, UserName = userName, Password = password };
+            }
+            else
+            {
+                _rabbitConnection = rabbitConnection;
+            }
+            
             SslOption opt = _rabbitConnection.Ssl;
             if (opt != null && opt.Enabled)
             {
